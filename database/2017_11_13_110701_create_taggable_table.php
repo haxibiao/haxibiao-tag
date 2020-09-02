@@ -13,6 +13,10 @@ class CreateTaggableTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('taggables')) {
+            return;
+        }
+
         Schema::create('taggables', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('tag_id')->unsigned();
