@@ -1,0 +1,19 @@
+{
+  "name": "haxibiao/tag",
+  "type": "library",
+  "require": {
+    "php": ">=7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Haxibiao\\Tag\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Haxibiao\\Tag\\TagServiceProvider"
+      ]
+    }
+  }
+}

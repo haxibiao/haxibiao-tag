@@ -1,0 +1,36 @@
+type Tag {
+  id: Int!
+  """
+  标签名
+  """
+  name: String!
+  """
+  标签被引用的次数
+  """
+  count: Int
+  """
+  创建时间
+  """
+  created_at: DateTime!
+  """
+  更新时间
+  """
+  updated_at: DateTime!
+}
+
+extend type Query {
+  """
+  标签详情
+  """
+  tag(id: Int! @eq): Tag @find(model: "App\\Tag")
+
+  tags(filter: TagFilter):[Tag]
+    @paginate(defaultCount: 5, builder: "App\\Tag@resolveTags")
+}
+
+enum TagFilter {
+  """
+  热门标签
+  """
+  HOT
+}
