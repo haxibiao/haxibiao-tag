@@ -35,6 +35,8 @@ class InstallCommand extends Command
         ]);
 
         $this->comment("复制 stubs ...");
-        copy(__DIR__ . '/stubs/Tag.stub', app_path('Tag.php'));
+        if(!file_exists(app_path('Tag.php'))){
+            copy(__DIR__ . '/stubs/Tag.stub', app_path('Tag.php'));
+        }
     }
 }
