@@ -1,0 +1,9 @@
+<?php
+
+namespace App;
+
+use Haxibiao\Tag\Tag as BaseTag;
+
+class Tag extends BaseTag
+{
+}
