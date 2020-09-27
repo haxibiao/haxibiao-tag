@@ -20,9 +20,9 @@ trait CanBeTaged
             }
         });
 
-        static::deleting(function($model) {
+        static::deleting(function ($model) {
             // 强制删除时移除标签关系
-            if($model->forceDeleting){
+            if ($model->forceDeleting) {
                 $model->untagByNames();
             }
         });
@@ -42,7 +42,7 @@ trait CanBeTaged
     /**
      * 通过属性获取标签名，例如 $model->tag_names = '经典电影, 音乐欣赏';
      */
-    public function getTagNamesAttribute($value,$delimiter=', ')
+    public function getTagNamesAttribute($value, $delimiter = ', ')
     {
         return implode($delimiter, $this->tagNames());
     }
@@ -50,7 +50,7 @@ trait CanBeTaged
     public function setTagsAttribute($tags)
     {
         $tagNames = $this->makeTagArray($tags);
-        if (! $this->exists) {
+        if (!$this->exists) {
             $this->pendingTags = $tagNames;
             return;
         }
@@ -66,7 +66,7 @@ trait CanBeTaged
     {
         $syncData   = [];
         $tags       = Tag::byTagIds($tags)->get();
-        foreach ($tags as $tag){
+        foreach ($tags as $tag) {
             $syncData[$tag->id] = [
                 'user_id'  => $this->user_id,
                 'tag_name' => $tag->name,
@@ -98,7 +98,7 @@ trait CanBeTaged
     {
         $syncData   = [];
         $tags       = Tag::byTagIds($tags)->get();
-        foreach ($tags as $tag){
+        foreach ($tags as $tag) {
             $syncData[$tag->id] = [
                 'user_id'  => $this->user_id,
                 'tag_name' => $tag->name,
@@ -116,12 +116,12 @@ trait CanBeTaged
      */
     public function tagByNames($tagNames)
     {
-        if(!is_array($tagNames)) {
+        if (!is_array($tagNames)) {
             $tagNames = func_get_args();
         }
         $tagNames = $this->makeTagArray($tagNames);
 
-        foreach($tagNames as $tagName) {
+        foreach ($tagNames as $tagName) {
             $this->addTagByName($tagName);
         }
 
@@ -141,15 +141,15 @@ trait CanBeTaged
      * @param null $tagNames string or array (or null to remove all tags)
      * @return $this
      */
-    public function untagByNames($tagNames=null)
+    public function untagByNames($tagNames = null)
     {
-        if(is_null($tagNames)) {
+        if (is_null($tagNames)) {
             $tagNames = $this->tagNames();
         }
 
         $tagNames = $this->makeTagArray($tagNames);
 
-        foreach($tagNames as $tagName) {
+        foreach ($tagNames as $tagName) {
             $this->removeTagByName($tagName);
         }
 
@@ -163,7 +163,7 @@ trait CanBeTaged
      */
     public function retagByNames($tagNames)
     {
-        if(!is_array($tagNames)) {
+        if (!is_array($tagNames)) {
             $tagNames = func_get_args();
         }
         $tagNames = $this->makeTagArray($tagNames);
@@ -174,7 +174,7 @@ trait CanBeTaged
 
         $this->untagByNames($deletions);
 
-        foreach($additions as $tagName) {
+        foreach ($additions as $tagName) {
             $this->addTagByName($tagName);
         }
 
@@ -191,33 +191,33 @@ trait CanBeTaged
 
     private function addTagByName($tagName)
     {
-        $tag = \App\Tag::byTagName($tagName)
+        $tag = \App\Tag::query()->byTagName($tagName)
             ->first();
 
         // 如果Tag存在，不需要创建
-        if($tag) {
+        if ($tag) {
             $count = $this->taggable()->where('tag_id', '=', $tag->id)->take(1)->count();
             // 中间表已经存在记录则跳过
-            if($count >= 1) {
+            if ($count >= 1) {
                 return;
             } else {
                 $this->tags()->attach([
-                    $tag->id=>[
+                    $tag->id => [
                         'user_id'  => $this->user_id,
                         'tag_name' => $tagName
                     ]
                 ]);
             }
-        // 如果Tag存在，创建一个Tag并且关联到当前对象
+            // 如果Tag存在，创建一个Tag并且关联到当前对象
         } else {
             $tag = new \App\Tag();
             $tag->name = $tagName;
             $tag->save();
 
             $this->tags()->attach([
-                $tag->id=>[
+                $tag->id => [
                     'user_id' => $this->user_id,
-                    'tag_name'=> $tagName
+                    'tag_name' => $tagName
                 ]
             ]);
         }
@@ -238,13 +238,13 @@ trait CanBeTaged
 
     private function makeTagArray($tagNames)
     {
-        if(is_array($tagNames) && count($tagNames) == 1) {
+        if (is_array($tagNames) && count($tagNames) == 1) {
             $tagNames = reset($tagNames);
         }
 
-        if(is_string($tagNames)) {
+        if (is_string($tagNames)) {
             $tagNames = explode(',', $tagNames);
-        } elseif(!is_array($tagNames)) {
+        } elseif (!is_array($tagNames)) {
             $tagNames = array(null);
         }
 
