@@ -191,7 +191,7 @@ trait CanBeTaged
 
     private function addTagByName($tagName)
     {
-        $tag = \App\Tag::query()->byTagName($tagName)
+        $tag = \App\Tag::query()->where('name', $tagName)
             ->first();
 
         // 如果Tag存在，不需要创建
