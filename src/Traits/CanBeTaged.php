@@ -208,7 +208,7 @@ trait CanBeTaged
                     ]
                 ]);
             }
-            // 如果Tag存在，创建一个Tag并且关联到当前对象
+            // 如果Tag不存在，创建一个Tag并且关联到当前对象
         } else {
             $tag = new \App\Tag();
             $tag->name = $tagName;
