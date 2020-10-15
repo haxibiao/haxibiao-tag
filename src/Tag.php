@@ -17,7 +17,7 @@ class Tag extends Model
 
     public function taggable($related):MorphToMany
     {
-        return $this->morphedByMany($related, 'taggable');
+        return $this->morphedByMany($related, 'taggable')->withTimestamps();
     }
 
     public function scopeByTagName($query, $tagName)
