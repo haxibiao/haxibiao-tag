@@ -116,8 +116,9 @@ class Tag extends Model
 
         //返回首页置顶的4个标签
         if ($args['filter'] == 'HOT') {
-            return $qb->orderByDesc('count');
+            return $qb->orderByDesc('count')
+            ->whereBetWeen('created_at', [now()->subDay(14), now()]);
         }
-        return $qb;
+        return $qb->whereBetWeen('created_at', [now()->subDay(14), now()]);
     }
 }
