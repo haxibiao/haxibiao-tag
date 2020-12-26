@@ -2,15 +2,13 @@
 
 namespace Haxibiao\Tag;
 
-
-use Haxibiao\Base\Model;
+use App\Model;
 
 class Taggable extends Model
 {
 
     protected $table = 'taggables';
-    public $guarded = [];
-
+    public $guarded  = [];
 
     public function taggable()
     {

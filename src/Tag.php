@@ -2,20 +2,21 @@
 
 namespace Haxibiao\Tag;
 
-use Haxibiao\Base\Model;
+use App\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 class Tag extends Model
 {
     protected $table = 'tags';
-    public $guarded = [];
+    public $guarded  = [];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo('\App\User');
     }
 
-    public function taggable($related):MorphToMany
+    public function taggable($related): MorphToMany
     {
         return $this->morphedByMany($related, 'taggable')->withTimestamps();
     }
@@ -52,7 +53,8 @@ class Tag extends Model
         return $query->whereIn('name', $tagNames)->lists('id');
     }
 
-    public function scopeByUserId($query, $userId){
+    public function scopeByUserId($query, $userId)
+    {
         return $query->where('user_id', $userId);
     }
 
@@ -69,7 +71,7 @@ class Tag extends Model
      */
     public function incrementCount($count)
     {
-        if($count <= 0) { return; }
+        if ($count <= 0) {return;}
         $this->count = $this->count + $count;
         $this->save();
     }
@@ -79,32 +81,32 @@ class Tag extends Model
      */
     public function decrementCount($count)
     {
-        if($count <= 0) { return; }
+        if ($count <= 0) {return;}
 
         $this->count = $this->count - $count;
-        if($this->count < 0) {
+        if ($this->count < 0) {
             $this->count = 0;
         }
         $this->save();
     }
 
+    public function resovelAddTags($rootValue, $args, $context, $resolveInfo)
+    {
 
-    public function resovelAddTags($rootValue, $args, $context, $resolveInfo){
-
-        $name  = data_get($args,'name');
-        $tagIds = data_get($args,'tag_ids',[]);
-        $taggableId     = data_get($args,'taggable_id');
-        $taggableType   = data_get($args,'taggable_type');
+        $name         = data_get($args, 'name');
+        $tagIds       = data_get($args, 'tag_ids', []);
+        $taggableId   = data_get($args, 'taggable_id');
+        $taggableType = data_get($args, 'taggable_type');
 
         $modelString = Relation::getMorphedModel($taggableType);
-        if(!class_exists($modelString)){
+        if (!class_exists($modelString)) {
             return false;
         }
         $model = $modelString::findOrFail($taggableId);
-        if($tagIds){
+        if ($tagIds) {
             $model->tagByIds($tagIds);
         }
-        if($name){
+        if ($name) {
             $model->tagByNames($name);
         }
         return true;
@@ -117,7 +119,7 @@ class Tag extends Model
         //返回首页置顶的4个标签
         if ($args['filter'] == 'HOT') {
             return $qb->orderByDesc('count')
-            ->whereBetWeen('created_at', [now()->subDay(14), now()]);
+                ->whereBetWeen('created_at', [now()->subDay(14), now()]);
         }
         return $qb->whereBetWeen('created_at', [now()->subDay(14), now()]);
     }
